@@ -2,153 +2,219 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard de Performance - Classificação ROI</title>
+    <title>BI Strategy - Elite Command Center V4</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #0f172a; --accent: #3b82f6; --bg: #f8fafc; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #334155; }
-        .container { max-width: 1400px; margin: auto; }
+        :root {
+            --bg: #020617;
+            --card-bg: #0f172a;
+            --accent: #3b82f6;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --border: #1e293b;
+            --success: #10b981;
+            --gold: #fbbf24;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 25px; color: var(--text-main); }
+        .container { max-width: 1600px; margin: auto; }
         
-        /* Header */
-        .header { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-top: 5px solid var(--accent); }
-        select { padding: 12px 20px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 16px; background: #fff; width: 450px; cursor: pointer; font-weight: 600; color: var(--accent); outline: none; }
+        /* SEÇÃO GLOBAL EXPANDIDA */
+        .global-section { margin-bottom: 50px; }
+        .global-title { font-size: 14px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.4em; margin-bottom: 25px; text-align: center; }
+        
+        .global-monitor { 
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; 
+        }
+        .global-card {
+            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+            padding: 35px 20px; border-radius: 35px; border: 1px solid var(--border);
+            text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .global-card h2 { color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 12px; font-weight: 700; }
+        .global-card .amount { font-size: 32px; font-weight: 800; color: #fff; letter-spacing: -1px; }
+        .global-card.highlight .amount { color: var(--success); }
+        .global-card.roi .amount { color: var(--gold); }
 
-        /* KPI Cards */
-        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
-        .kpi-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
-        .kpi-card h4 { margin: 0; color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; }
-        .kpi-card .val { font-size: 24px; font-weight: 700; margin-top: 10px; display: block; color: var(--primary); }
-        
-        /* Badge ROI */
-        .roi-badge { position: absolute; top: 15px; right: 15px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: white; }
+        .legend-box { 
+            text-align: center; margin-top: 30px; padding: 20px; border-radius: 20px; 
+            background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+        }
+        .conv-val { font-size: 24px; font-weight: 800; color: var(--success); display: block; margin-bottom: 5px; }
+        .legend-text { font-size: 12px; color: var(--text-dim); font-style: italic; max-width: 700px; margin: 0 auto; line-height: 1.6; }
 
-        /* Layout */
-        .main-layout { display: grid; grid-template-columns: 1.3fr 1fr; gap: 25px; }
-        .box { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .box h3 { margin: 0 0 20px; font-size: 18px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; }
-        
-        .demo-flex { display: flex; gap: 30px; align-items: flex-start; }
-        .age-chart-wrap { flex-grow: 1; height: 320px; }
-        
-        .hood-box { max-height: 400px; overflow-y: auto; padding: 15px; background: #f8fafc; border-radius: 12px; border: 1px solid #f1f5f9; }
-        .tag { display: inline-block; background: #eff6ff; color: #1e40af; padding: 6px 12px; border-radius: 8px; margin: 4px; font-size: 12px; font-weight: 600; border: 1px solid #dbeafe; }
-        .city-tag { background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 700; margin-bottom: 10px; display: inline-block; }
+        /* CLINIC HEADER */
+        .clinic-header { 
+            background: var(--card-bg); padding: 30px 50px; border-radius: 30px; border: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
+            margin-top: 20px;
+        }
+        select { 
+            padding: 16px 35px; border-radius: 20px; border: 1px solid var(--border);
+            font-size: 16px; background: #1e293b; color: #fff; width: 500px; 
+            cursor: pointer; font-weight: 700; outline: none; transition: 0.3s;
+        }
+
+        /* UNIT GRID */
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 35px; }
+        .kpi-card { background: var(--card-bg); padding: 30px; border-radius: 28px; border: 1px solid var(--border); position: relative; }
+        .kpi-card .val { font-size: 26px; font-weight: 700; margin-top: 10px; display: block; }
+        .roi-rank { position: absolute; top: 15px; right: 20px; padding: 6px 15px; border-radius: 10px; font-size: 11px; font-weight: 900; color: #fff; text-transform: uppercase; }
+
+        .main-grid { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 30px; }
+        .box { background: var(--card-bg); padding: 35px; border-radius: 35px; border: 1px solid var(--border); }
+        .box h3 { font-size: 16px; margin: 0 0 30px; font-weight: 700; border-left: 5px solid var(--accent); padding-left: 18px; color: #fff; }
+
+        /* FUNNEL */
+        .funnel-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .f-step { position: relative; width: 100%; text-align: center; color: white; font-weight: 700; padding: 20px 0; border-radius: 12px; font-size: 14px; }
+        .f-leads { background: linear-gradient(180deg, #6366f1, #4338ca); width: 100%; clip-path: polygon(0% 0%, 100% 0%, 93% 100%, 7% 100%); }
+        .f-budget { background: linear-gradient(180deg, #3b82f6, #1d4ed8); width: 80%; clip-path: polygon(0% 0%, 100% 0%, 88% 100%, 12% 100%); }
+        .f-revenue { background: linear-gradient(180deg, #10b981, #065f46); width: 60%; border-radius: 0 0 20px 20px; }
+
+        .hood-list { max-height: 400px; overflow-y: auto; padding-right: 15px; }
+        .tag { display: inline-block; background: rgba(59, 130, 246, 0.05); color: #60a5fa; padding: 10px 18px; border-radius: 12px; margin: 6px; font-size: 12px; border: 1px solid rgba(59, 130, 246, 0.2); font-weight: 600; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <div>
-            <h1>Dashboard de Performance & Vendas</h1>
-            <p style="margin:5px 0 0; color: #94a3b8; font-size: 14px;">Análise de ROI por Categoria e Fluxo de Orçamentos</p>
+    <div class="global-section">
+        <div class="global-title">Consolidado Estratégico da Rede</div>
+        <div class="global-monitor">
+            <div class="global-card">
+                <h2>Total de Clínicas</h2>
+                <span class="amount">22 Unidades</span>
+            </div>
+            <div class="global-card">
+                <h2>Investimento Ads</h2>
+                <span class="amount">R$ 52.519,09</span>
+            </div>
+            <div class="global-card">
+                <h2>Volume Orçado</h2>
+                <span class="amount">R$ 3.132.288,36</span>
+            </div>
+            <div class="global-card highlight">
+                <h2>Faturamento Rede</h2>
+                <span class="amount">R$ 744.376,42</span>
+            </div>
+            <div class="global-card roi">
+                <h2>ROI Global</h2>
+                <span class="amount">1.317,3%</span>
+            </div>
         </div>
-        <select id="clinicSelect" onchange="renderDashboard(this.value)"></select>
+
+        <div class="legend-box">
+            <span class="conv-val">Conversão de Rede: 23.76%</span>
+            <p class="legend-text">
+                <strong>Definição da Métrica:</strong> A taxa de conversão representa o percentual do valor total em orçamentos que foi efetivamente transformado em faturamento (Vendas Efetivadas). 
+                Ex: Se a rede orçou R$ 1.000,00 e vendeu R$ 237,60, sua conversão é de 23.76%.
+            </p>
+        </div>
+    </div>
+
+    <div class="clinic-header">
+        <div>
+            <h1 id="clinicTitle">Dashboard da Unidade</h1>
+            <p style="margin:5px 0 0; color: var(--text-dim); font-size: 14px;">Visão detalhada por unidade</p>
+        </div>
+        <select id="clinicSelect" onchange="updateDashboard(this.value)"></select>
     </div>
 
     <div class="kpi-grid">
         <div class="kpi-card">
-            <h4>Total Orçamentos</h4>
-            <span id="kpiBudget" class="val">R$ 0,00</span>
+            <h4>Valor Orçado</h4>
+            <span id="vBudget" class="val">--</span>
         </div>
         <div class="kpi-card">
             <h4>Valor Efetivado</h4>
-            <span id="kpiRevenue" class="val">R$ 0,00</span>
+            <span id="vRevenue" class="val">--</span>
         </div>
         <div class="kpi-card">
-            <h4>Investimento (Ads)</h4>
-            <span id="kpiSpend" class="val">R$ 0,00</span>
+            <h4>Investimento</h4>
+            <span id="vSpend" class="val">--</span>
         </div>
         <div class="kpi-card">
-            <h4>Retorno (ROI %)</h4>
-            <span id="kpiROI" class="val">0.0%</span>
-            <span id="roiTag" class="roi-badge">--</span>
+            <h4>Performance (ROI)</h4>
+            <span id="vROI" class="val">--</span>
+            <span id="vRank" class="roi-rank">--</span>
         </div>
     </div>
 
-    <div class="main-layout">
+    <div class="main-grid">
         <div class="box">
-            <h3>Público-Alvo (Idade e Gênero)</h3>
-            <div class="demo-flex">
-                <div style="width: 200px; text-align: center;">
-                    <canvas id="genderChart"></canvas>
-                    <p style="margin-top:20px; font-size: 12px; font-weight: 700; color: #64748b;">Gênero</p>
-                </div>
-                <div class="age-chart-wrap">
-                    <canvas id="ageChart"></canvas>
-                </div>
+            <h3>Funil da Unidade</h3>
+            <div class="funnel-wrap">
+                <div class="f-step f-leads"><span id="fLeads">0</span> Leads</div>
+                <div class="f-step f-budget">R$ <span id="fBudget">0</span> Orçado</div>
+                <div class="f-step f-revenue">R$ <span id="fRevenue">0</span> Efetivado</div>
+            </div>
+            <div style="text-align:center; margin-top:30px;">
+                <span style="font-size: 10px; color: var(--text-dim); text-transform: uppercase;">Conversão Unitária</span>
+                <div style="font-size: 32px; font-weight: 800; color: var(--success);" id="fConv">0%</div>
             </div>
         </div>
 
         <div class="box">
-            <h3>Bairros e Municípios Captados</h3>
-            <p><strong>Cidades:</strong></p>
-            <div id="cityList"></div>
-            <p style="margin-top:20px;"><strong>Bairros Identificados:</strong></p>
-            <div class="hood-box" id="hoodContainer"></div>
+            <h3>Perfil Etário</h3>
+            <div style="height: 300px;">
+                <canvas id="ageChart"></canvas>
+            </div>
+            <div style="margin-top:35px; text-align:center; border-top: 1px solid var(--border); padding-top:20px;">
+                <span style="display:block; color: var(--text-dim); font-size: 10px; text-transform: uppercase;">Gênero Dominante</span>
+                <span id="vGender" style="font-weight: 800; font-size: 20px; color: #ec4899;">--</span>
+            </div>
+        </div>
+
+        <div class="box">
+            <h3>Lista de Bairros</h3>
+            <div class="hood-list" id="hoodBox"></div>
         </div>
     </div>
 </div>
 
 <script>
-const clinicsData = {"Santa Maria - Praça Saldanha Marinho": {"investment": 2013.53, "budget": 351882.0, "revenue": 39247.33, "roi": 1849.2, "roi_cat": "Ouro", "roi_color": "#fbbf24", "clicks": 2160, "leads": 124, "cpl": 16.24, "impressions": 152504, "female_pct": 78.6, "male_pct": 21.4, "age_dist": {"0-18": 1, "19-30": 10, "31-45": 3, "46-60": 9, "60+": 5}, "cities": ["Santa Maria"], "hoods": ["Arroio Grande", "Bonfim", "Camobi", "Caturrita", "Centro", "Divina Providência", "Itararé", "Juscelino Kubitschek", "Km 3", "Noal", "Nossa Senhora Das Dores", "Nossa Senhora Do Rosário", "Nossa Senhora Medianeira", "Passo D'Areia", "Patronato", "Presidente João Goulart", "São José", "São João", "Urlândia"]}, "Sapiranga": {"investment": 572.82, "budget": 10952.5, "revenue": 0.0, "roi": -100.0, "roi_cat": "Atenção", "roi_color": "#ef4444", "clicks": 485, "leads": 55, "cpl": 10.41, "impressions": 60155, "female_pct": 100.0, "male_pct": 0.0, "age_dist": {"0-18": 0, "19-30": 2, "31-45": 2, "46-60": 0, "60+": 0}, "cities": ["Ararica", "Sapiranga"], "hoods": ["Intregação", "Santa Fé", "Sao Luiz", "Vôo Livre"]}, "Carazinho": {"investment": 2535.4, "budget": 42593.01, "revenue": 10616.04, "roi": 318.7, "roi_cat": "Atenção", "roi_color": "#ef4444", "clicks": 1844, "leads": 81, "cpl": 31.3, "impressions": 299116, "female_pct": 47.4, "male_pct": 52.6, "age_dist": {"0-18": 6, "19-30": 3, "31-45": 4, "46-60": 4, "60+": 2}, "cities": ["Carazinho", "Salvador", "Santo Antonio Da Patrulha"], "hoods": ["Centro", "Centro, Santo Antonio Do Planalto", "Coqueiros Do Sul", "Fabio ", "Floresta", "Fye", "Gloria", "Hípica", "Nova Ouro Preto", "Padua", "Planalto", "Santo Antonio", "Santo Antonio ", "Sommer", "Vila Rica", "Wincler"]}, "Erechim": {"investment": 884.67, "budget": 156627.4, "revenue": 28052.63, "roi": 3071.0, "roi_cat": "Diamante", "roi_color": "#2dd4bf", "clicks": 559, "leads": 51, "cpl": 17.35, "impressions": 50913, "female_pct": 50.0, "male_pct": 50.0, "age_dist": {"0-18": 1, "19-30": 6, "31-45": 8, "46-60": 4, "60+": 3}, "cities": ["Cruzaltense", "Erechim", "Mariano Moro"], "hoods": ["Agrícola", "Aldo Arioli", "Antonio Rigo", "Atlântico", "Bela Vista", "Centro", "Cruz-Altense ", "Ipiranga", "Jabuticabal", "Koller", "Linho", "Mariano Moro", "Novo Atlantico ", "Paiol Grande", "Parque Redenção", "Progresso", "São Cristóvão", "Três Vendas", "Victória Ii", "Zimmer"]}, "Uruguaiana": {"investment": 5733.08, "budget": 127808.0, "revenue": 68544.81, "roi": 1095.6, "roi_cat": "Prata", "roi_color": "#94a3b8", "clicks": 6177, "leads": 199, "cpl": 28.81, "impressions": 951441, "female_pct": 58.7, "male_pct": 41.3, "age_dist": {"0-18": 7, "19-30": 20, "31-45": 24, "46-60": 14, "60+": 10}, "cities": ["Uruguaiana"], "hoods": ["Bela Vista", "Cabo Luís Quevedo", "Centro", "Cidade Alegria", "Cidade Nova", "Ipiranga", "Jóquei Clube", "Mascarenhas De Moraes", "Quinta ", "Rio Branco", "Rui Ramos", "Santana", "São Joao", "São João", "São Miguel", "Tabajara Brites", "União Das Vilas", "Vila Júlia"]}, "Lajeado": {"investment": 1629.45, "budget": 101686.01, "revenue": 38371.8, "roi": 2254.9, "roi_cat": "Ouro", "roi_color": "#fbbf24", "clicks": 3611, "leads": 123, "cpl": 13.25, "impressions": 156291, "female_pct": 63.2, "male_pct": 36.8, "age_dist": {"0-18": 3, "19-30": 14, "31-45": 14, "46-60": 6, "60+": 1}, "cities": ["Estrela", "Lajeado", "Marques De Souza", "Santa Clara Do Sul"], "hoods": ["Alto Do Parque", "Bom Pastor", "Campestre", "Carneiros ", "Centenário", "Centro", "Conventos", "Floresta", "Florestal", "Hidráulica", "Jardim Do Cedro", "Linha Bastos", "Moinhos D'Água", "Montanha", "Parque Das Flores ", "Pinheiros ", "Santa Clara ", "Santo Antônio", "São Cristóvão", "Universitario", "Universitário"]}, "São Gabriel": {"investment": 436.2, "budget": 39606.0, "revenue": 21718.99, "roi": 4879.1, "roi_cat": "Diamante", "roi_color": "#2dd4bf", "clicks": 1014, "leads": 45, "cpl": 9.69, "impressions": 75805, "female_pct": 58.8, "male_pct": 41.2, "age_dist": {"0-18": 2, "19-30": 7, "31-45": 4, "46-60": 3, "60+": 1}, "cities": ["Dom Pedrito", "Sao Gabriel", "Vila Nova Do Sul"], "hoods": ["Andrade", "Baltar", "Batovi", "Bomfim", "Centro", "Esplanada", "Independência", "Medeiros", "Santa Terezinha", "São Bento", "Vila Maria", "Vivenda"]}, "Santiago": {"investment": 3466.77, "budget": 136814.0, "revenue": 95335.36, "roi": 2650.0, "roi_cat": "Diamante", "roi_color": "#2dd4bf", "clicks": 4571, "leads": 138, "cpl": 25.12, "impressions": 540207, "female_pct": 70.4, "male_pct": 29.6, "age_dist": {"0-18": 4, "19-30": 6, "31-45": 9, "46-60": 6, "60+": 2}, "cities": ["Capao Do Cipo", "Nova Esperanca Do Sul", "Santiago", "Sao Vicente Do Sul", "Unistalda"], "hoods": ["Alto Da Boa Vista", "Ana Bonato ", "Carlos Humberto ", "Castilhos ", "Centro", "Centro ", "Gaspar Dutra ", "Guabiroba", "Interior", "Interior ", "Itu", "Jardim ", "Jardim Das Hortencias", "João Evangelista", "Lulu Genro", "Lulu Genro ", "Missões", "Monsenhor Assis", "Vila Nova", "Vila Nova "]}, "Itaqui": {"investment": 2131.9, "budget": 26439.0, "revenue": 5609.91, "roi": 163.1, "roi_cat": "Atenção", "roi_color": "#ef4444", "clicks": 7768, "leads": 152, "cpl": 14.03, "impressions": 293525, "female_pct": 62.5, "male_pct": 37.5, "age_dist": {"0-18": 2, "19-30": 5, "31-45": 8, "46-60": 0, "60+": 1}, "cities": ["Itaqui"], "hoods": ["Alvorada ", "Cafifas ", "Capelinha ", "Centro", "Centro ", "Cerro Dos De Leon ", "Chácara", "Chácara ", "Cidade Alta ", "Dr Ayub ", "José Da Luz ", "Promorar "]}, "Caruaru": {"investment": 3057.32, "budget": 245641.02, "revenue": 100047.74, "roi": 3172.4, "roi_cat": "Diamante", "roi_color": "#2dd4bf", "clicks": 2443, "leads": 265, "cpl": 11.54, "impressions": 257593, "female_pct": 43.2, "male_pct": 56.8, "age_dist": {"0-18": 2, "19-30": 8, "31-45": 13, "46-60": 13, "60+": 8}, "cities": ["Agrestina", "Altinho", "Camocim De Sao Felix", "Caruaru", "Sao Joaquim Do Monte", "Vitoria De Santo Antao"], "hoods": ["Boa Vista", "Caiuca", "Centenário", "Centro", "Da Creche", "Deputado José Antônio Liberato", "Divinópolis", "Indianópolis", "José Carlos De Oliveira", "Luiz Gonzaga", "Maurício De Nassau", "Morro Do Bom Jesus", "Nossa Senhora Das Dores", "Nossa Senhora Do Amparo", "Nova Caruaru", "Petrópolis", "Rafael", "Rendeiras", "Salgado", "Santa Rosa", "São Francisco", "São João Da Escócia", "Universitário", "Vassoural"]}, "Ibiporã": {"investment": 2523.38, "budget": 188898.01, "revenue": 13970.4, "roi": 453.6, "roi_cat": "Atenção", "roi_color": "#ef4444", "clicks": 3643, "leads": 80, "cpl": 31.54, "impressions": 253408, "female_pct": 74.3, "male_pct": 25.7, "age_dist": {"0-18": 3, "19-30": 11, "31-45": 13, "46-60": 7, "60+": 1}, "cities": ["Assai", "Ibipora", "Jataizinho"], "hoods": ["Centro ", "Estrada Tibagi", "Jataizinho", "Mustafa", "Pau D'Alho Do Sul", "Sao Jose", "Setor 1", "Setor 2", "Setor 4", "Setor 5", "Setor 6", "Setor 7", "Vila Romana 2"]}, "Montenegro": {"investment": 1987.22, "budget": 53609.0, "revenue": 21940.0, "roi": 1004.1, "roi_cat": "Prata", "roi_color": "#94a3b8", "clicks": 4890, "leads": 93, "cpl": 21.37, "impressions": 256684, "female_pct": 44.4, "male_pct": 55.6, "age_dist": {"0-18": 0, "19-30": 3, "31-45": 0, "46-60": 4, "60+": 2}, "cities": ["Brochier", "Montenegro"], "hoods": ["Centenário", "Centro", "Interior", "Santa Rita", "Vendinha"]}, "Santa Maria - Acampamento": {"investment": 1309.55, "budget": 21241.77, "revenue": 11500.0, "roi": 778.2, "roi_cat": "Atenção", "roi_color": "#ef4444", "clicks": 1161, "leads": 67, "cpl": 19.55, "impressions": 83779, "female_pct": 66.7, "male_pct": 33.3, "age_dist": {"0-18": 0, "19-30": 1, "31-45": 1, "46-60": 0, "60+": 1}, "cities": ["Santa Maria"], "hoods": ["Caturrita", "Pinheiro Machado", "Por Do Sol"]}, "Carlos Barbosa": {"investment": 3584.74, "budget": 109688.0, "revenue": 5933.18, "roi": 65.5, "roi_cat": "Atenção", "roi_color": "#ef4444", "clicks": 3232, "leads": 163, "cpl": 21.99, "impressions": 239472, "female_pct": 50.0, "male_pct": 50.0, "age_dist": {"0-18": 3, "19-30": 2, "31-45": 3, "46-60": 3, "60+": 1}, "cities": ["Barao", "Carlos Barbosa"], "hoods": ["Aparecida", "Centro", "Interior", "Mirante Do Lago", "Navegantes", "Triangulo", "Triângulo", "Vila Nova"]}, "Paulínia": {"investment": 2374.15, "budget": 442740.5, "revenue": 38039.46, "roi": 1502.2, "roi_cat": "Ouro", "roi_color": "#fbbf24", "clicks": 1142, "leads": 67, "cpl": 35.44, "impressions": 154915, "female_pct": 44.4, "male_pct": 55.6, "age_dist": {"0-18": 1, "19-30": 11, "31-45": 11, "46-60": 8, "60+": 5}, "cities": ["Artur Nogueira", "Campinas", "Paulinia", "Sumare"], "hoods": ["Alto De Pinheiros", "Balneário Tropical", "Jardim Amélia", "Jardim Bela Vista Ii", "Jardim De Itapoan", "Jardim Denadai (Nova Veneza)", "Jardim Do Sol", "Jardim Do Trevo (Nova Veneza)", "Jardim Flamboyant", "Jardim Planalto", "Jardim Vista Alegre", "João Aranha", "Nova Candeias", "Parque Bom Retiro", "Parque Da Figueira", "Parque Terras De Santa Maria", "Recanto Das Laranjeiras", "Saltinho", "Santa Cecília", "São Luiz", "Vila Monte Alegre", "Vila San Martin"]}, "Teresina - Centro": {"investment": 706.54, "budget": 115847.0, "revenue": 13394.44, "roi": 1795.8, "roi_cat": "Ouro", "roi_color": "#fbbf24", "clicks": 1252, "leads": 61, "cpl": 11.58, "impressions": 39411, "female_pct": 50.0, "male_pct": 50.0, "age_dist": {"0-18": 1, "19-30": 3, "31-45": 3, "46-60": 3, "60+": 2}, "cities": ["Teresina", "Timon"], "hoods": ["Fátima", "Novo Horizonte", "Parque Alvorada", "Parque Eliane ", "Piçarreira", "Porto Do Centro", "Primavera", "Santo Antônio", "São Sebastião", "Água Mineral"]}, "Indaiatuba": {"investment": 2831.63, "budget": 117104.53, "revenue": 82612.12, "roi": 2817.5, "roi_cat": "Diamante", "roi_color": "#2dd4bf", "clicks": 1566, "leads": 102, "cpl": 27.76, "impressions": 112700, "female_pct": 52.6, "male_pct": 47.4, "age_dist": {"0-18": 3, "19-30": 2, "31-45": 3, "46-60": 7, "60+": 4}, "cities": ["Elias Fausto", "Indaiatuba", "Salto"], "hoods": ["Centro", "Chácaras De Recreio Ingá", "Jardim Bréscia", "Jardim Monte Carlo", "Jardim Morada Do Sol", "Jardim Nair Maria", "Jardim Nova Elias Fausto", "Jardim Rossignatti", "Jardim Rêmulo Zoppi", "Jardim Santa Rita", "Jardim Santiago", "Parque Barnabé", "Residencial Monte Verde", "Vila Avaí", "Vila Todos Os Santos"]}, "Jaguariúna": {"investment": 4026.27, "budget": 157799.4, "revenue": 51047.5, "roi": 1167.9, "roi_cat": "Prata", "roi_color": "#94a3b8", "clicks": 2275, "leads": 149, "cpl": 27.02, "impressions": 285636, "female_pct": 59.4, "male_pct": 40.6, "age_dist": {"0-18": 3, "19-30": 8, "31-45": 6, "46-60": 11, "60+": 4}, "cities": ["Holambra", "Jaguariuna", "Pedreira", "Santo Antonio De Posse"], "hoods": ["Chácara Recreio Floresta", "Chácara Santo Antônio Colméia", "Colinas Do Castelo", "Conjunto Habitacional Doutor Sílvio Aguiar Maya", "Conjunto Habitacional Vila 12 De Setembro 2° Etapa", "Estância Das Flores", "Jardim Cruzeiro Do Sul", "Jardim Europa", "Jardim Imperial", "Jardim Novo Jaguari", "Núcleo Residencial Doutor João Aldo Nassif", "Núcleo Residencial São José", "Parque Florianópolis", "Parque Residencial Groot", "Parque Residencial Prefeito Augusto Lala", "Recanto Camanducaia", "Residencial Arco Iris I", "Residencial Águas Do Jaguari", "Roseira De Cima", "Vargeão", "Vila Guilherme Giesbrecht", "Vila Jorge Zambon", "Vila Macedo", "Vila Primavera", "Vila São Francisco"]}, "Londrina - Av. Bandeirantes": {"investment": 2527.49, "budget": 128982.04, "revenue": 28538.83, "roi": 1029.1, "roi_cat": "Prata", "roi_color": "#94a3b8", "clicks": 5224, "leads": 152, "cpl": 16.63, "impressions": 168059, "female_pct": 65.0, "male_pct": 35.0, "age_dist": {"0-18": 3, "19-30": 2, "31-45": 9, "46-60": 3, "60+": 3}, "cities": ["Londrina"], "hoods": ["Bandeirantes", "Centro", "Gaion", "Gleba Fazenda Palhano", "Ideal", "Jardim Continental", "Jardim Portal Dos Pioneiros", "Lagoa Dourada", "Lindóia", "Nova Olinda", "Paraíso", "Parque Residencial Joaquim Toledo Piza", "Rodocentro", "Terra Bonita", "Vila Ipiranga", "Vila Siam"]}, "Curitiba": {"investment": 448.14, "budget": 69986.5, "revenue": 6220.01, "roi": 1288.0, "roi_cat": "Prata", "roi_color": "#94a3b8", "clicks": 243, "leads": 23, "cpl": 19.48, "impressions": 15243, "female_pct": 33.3, "male_pct": 66.7, "age_dist": {"0-18": 0, "19-30": 0, "31-45": 0, "46-60": 3, "60+": 3}, "cities": ["Curitiba"], "hoods": ["Cidade Industrial", "Novo Mundo", "Portão"]}, "Brusque": {"investment": 1979.87, "budget": 175254.75, "revenue": 22250.93, "roi": 1023.9, "roi_cat": "Prata", "roi_color": "#94a3b8", "clicks": 2063, "leads": 112, "cpl": 17.68, "impressions": 84372, "female_pct": 33.3, "male_pct": 66.7, "age_dist": {"0-18": 0, "19-30": 2, "31-45": 5, "46-60": 5, "60+": 0}, "cities": ["Aracaju", "Brusque", "Guabiruba", "Itajai"], "hoods": ["Brilhante I", "Campeche", "Centro", "Gabiroba", "Limeira Baixa", "Poço Fundo", "Rio Branco", "Santa Terezinha", "São Pedro", "Tomaz Coelho", "Área Rural De Itajaí"]}, "Maringá - Souza Naves": {"investment": 2184.17, "budget": 108484.42, "revenue": 8025.0, "roi": 267.4, "roi_cat": "Atenção", "roi_color": "#ef4444", "clicks": 1329, "leads": 99, "cpl": 22.06, "impressions": 87582, "female_pct": 55.2, "male_pct": 44.8, "age_dist": {"0-18": 2, "19-30": 7, "31-45": 9, "46-60": 10, "60+": 1}, "cities": ["Floresta", "Mandaguacu", "Maringa", "Paicandu", "Sarandi"], "hoods": ["Centro", "Centro Norte", "Chácaras Aeroporto", "Conjunto Habitacional Requião", "Ebenezer", "Jardim Alvorada", "Jardim Atlanta", "Jardim Dos Ipês", "Jardim Ipanema", "Jardim Liberdade", "Jardim Paraíso", "Jardim Piata", "Jardim Rio De Janeiro", "Jardim Tóquio", "Loteamento Malbec", "Parque Industrial", "Parque Residencial Quebec", "Vila Bosque", "Vila Marumby", "Vila Morangueira", "Zona 06", "Zona 07"]}, "Mogi das Cruzes": {"investment": 4147.62, "budget": 213556.0, "revenue": 33359.94, "roi": 704.3, "roi_cat": "Atenção", "roi_color": "#ef4444", "clicks": 1445, "leads": 121, "cpl": 34.28, "impressions": 164921, "female_pct": 37.0, "male_pct": 63.0, "age_dist": {"0-18": 0, "19-30": 2, "31-45": 12, "46-60": 9, "60+": 4}, "cities": ["Bertioga", "Mogi Das Cruzes", "Sao Paulo"], "hoods": ["Alto Da Boa Vista", "Alto Ipiranga", "Braz Cubas", "Centro", "Conjunto Residencial Cocuera", "Cézar De Souza", "Jardim Aeroporto Iii", "Jardim Das Acácias", "Jardim Mogi", "Jardim Planalto", "Jardim São Pedro", "Jundiapeba", "Mogi Moderno", "Parque Das Varinhas", "Parque Guaianazes", "Parque Santana", "São Lourenço", "Vila Natal", "Vila Nova Aparecida", "Vila Rei", "Vila Santa Helena", "Vila São Francisco", "Vila Áurea Maria"]}};
+const db = {"Santa Maria - Praça Saldanha Marinho": {"investment": 2013.53, "budget": 351882.0, "revenue": 39247.33, "roi": 1849.2, "roi_cat": "Ouro", "roi_color": "#fbbf24", "conv": 11.2, "leads": 124, "female": 78.6, "age": {"0-18": 1, "19-30": 10, "31-45": 3, "46-60": 9, "60+": 5}, "hoods": ["Bonfim", "Camobi", "Centro", "Itararé", "JK", "Medianeira", "Patronato", "Urlândia"]}, "Carazinho": {"investment": 2535.4, "budget": 42593.01, "revenue": 10616.04, "roi": 318.7, "roi_cat": "Atenção", "roi_color": "#f43f5e", "conv": 24.9, "leads": 81, "female": 47.4, "age": {"0-18": 6, "19-30": 3, "31-45": 4, "46-60": 4, "60+": 2}, "hoods": ["Centro", "Floresta", "Gloria", "Santo Antonio", "Vila Rica"]}, "Erechim": {"investment": 884.67, "budget": 156627.4, "revenue": 28052.63, "roi": 3071.0, "roi_cat": "Diamante", "roi_color": "#2dd4bf", "conv": 17.9, "leads": 51, "female": 50.0, "age": {"0-18": 1, "19-30": 6, "31-45": 8, "46-60": 4, "60+": 3}, "hoods": ["Centro", "Ipiranga", "Koller", "Parque Redenção", "Três Vendas"]}, "Uruguaiana": {"investment": 5733.08, "budget": 127808.0, "revenue": 68544.81, "roi": 1095.6, "roi_cat": "Prata", "roi_color": "#94a3b8", "conv": 53.6, "leads": 199, "female": 58.7, "age": {"0-18": 7, "19-30": 20, "31-45": 24, "46-60": 14, "60+": 10}, "hoods": ["Bela Vista", "Centro", "Cidade Nova", "Santana", "São João"]}, "Lajeado": {"investment": 1629.45, "budget": 101686.01, "revenue": 38371.8, "roi": 2254.9, "roi_cat": "Ouro", "roi_color": "#fbbf24", "conv": 37.7, "leads": 123, "female": 63.2, "age": {"0-18": 3, "19-30": 14, "31-45": 14, "46-60": 6, "60+": 1}, "hoods": ["Centro", "Montanha", "São Cristóvão", "Universitário"]}, "São Gabriel": {"investment": 436.2, "budget": 39606.0, "revenue": 21718.99, "roi": 4879.1, "roi_cat": "Diamante", "roi_color": "#2dd4bf", "conv": 54.8, "leads": 45, "female": 58.8, "age": {"0-18": 2, "19-30": 7, "31-45": 4, "46-60": 3, "60+": 1}, "hoods": ["Bomfim", "Centro", "Esplanada", "Vila Maria"]}, "Santiago": {"investment": 3466.77, "budget": 136814.0, "revenue": 95335.36, "roi": 2650.0, "roi_cat": "Diamante", "roi_color": "#2dd4bf", "conv": 69.7, "leads": 138, "female": 70.4, "age": {"0-18": 4, "19-30": 6, "31-45": 9, "46-60": 6, "60+": 2}, "hoods": ["Centro", "Guabiroba", "Vila Nova"]}, "Itaqui": {"investment": 2131.9, "budget": 26439.0, "revenue": 5609.91, "roi": 163.1, "roi_cat": "Atenção", "roi_color": "#f43f5e", "conv": 21.2, "leads": 152, "female": 62.5, "age": {"0-18": 2, "19-30": 5, "31-45": 8, "46-60": 0, "60+": 1}, "hoods": ["Alvorada", "Centro", "Promorar"]}, "Caruaru": {"investment": 3057.32, "budget": 245641.02, "revenue": 100047.74, "roi": 3172.4, "roi_cat": "Diamante", "roi_color": "#2dd4bf", "conv": 40.7, "leads": 265, "female": 43.2, "age": {"0-18": 2, "19-30": 8, "31-45": 13, "46-60": 13, "60+": 8}, "hoods": ["Boa Vista", "Maurício De Nassau", "Universitário"]}, "Ibiporã": {"investment": 2523.38, "budget": 188898.01, "revenue": 13970.4, "roi": 453.6, "roi_cat": "Atenção", "roi_color": "#f43f5e", "conv": 7.4, "leads": 80, "female": 74.3, "age": {"0-18": 3, "19-30": 11, "31-45": 13, "46-60": 7, "60+": 1}, "hoods": ["Centro", "Mustafa", "Sao Jose"]}, "Montenegro": {"investment": 1987.22, "budget": 53609.0, "revenue": 21940.0, "roi": 1004.1, "roi_cat": "Prata", "roi_color": "#94a3b8", "conv": 40.9, "leads": 93, "female": 44.4, "age": {"0-18": 0, "19-30": 3, "31-45": 0, "46-60": 4, "60+": 2}, "hoods": ["Centenário", "Centro", "Santa Rita"]}, "Santa Maria - Acampamento": {"investment": 1309.55, "budget": 21241.77, "revenue": 11500.0, "roi": 778.2, "roi_cat": "Atenção", "roi_color": "#f43f5e", "conv": 54.1, "leads": 67, "female": 66.7, "age": {"0-18": 0, "19-30": 1, "31-45": 1, "46-60": 0, "60+": 1}, "hoods": ["Acampamento", "Por Do Sol"]}, "Carlos Barbosa": {"investment": 3584.74, "budget": 109688.0, "revenue": 5933.18, "roi": 65.5, "roi_cat": "Atenção", "roi_color": "#f43f5e", "conv": 5.4, "leads": 163, "female": 50.0, "age": {"0-18": 3, "19-30": 2, "31-45": 3, "46-60": 3, "60+": 1}, "hoods": ["Centro", "Navegantes", "Vila Nova"]}, "Paulínia": {"investment": 2374.15, "budget": 442740.5, "revenue": 38039.46, "roi": 1502.2, "roi_cat": "Ouro", "roi_color": "#fbbf24", "conv": 8.6, "leads": 67, "female": 44.4, "age": {"0-18": 1, "19-30": 11, "31-45": 11, "46-60": 8, "60+": 5}, "hoods": ["João Aranha", "Vila San Martin"]}, "Teresina - Centro": {"investment": 706.54, "budget": 115847.0, "revenue": 13394.44, "roi": 1795.8, "roi_cat": "Ouro", "roi_color": "#fbbf24", "conv": 11.6, "leads": 61, "female": 50.0, "age": {"0-18": 1, "19-30": 3, "31-45": 3, "46-60": 3, "60+": 2}, "hoods": ["Fátima", "Novo Horizonte", "Santo Antônio"]}, "Indaiatuba": {"investment": 2831.63, "budget": 117104.53, "revenue": 82612.12, "roi": 2817.5, "roi_cat": "Diamante", "roi_color": "#2dd4bf", "conv": 70.5, "leads": 102, "female": 52.6, "age": {"0-18": 3, "19-30": 2, "31-45": 3, "46-60": 7, "60+": 4}, "hoods": ["Centro", "Vila Avaí"]}, "Jaguariúna": {"investment": 4026.27, "budget": 157799.4, "revenue": 51047.5, "roi": 1167.9, "roi_cat": "Prata", "roi_color": "#94a3b8", "conv": 32.3, "leads": 149, "female": 59.4, "age": {"0-18": 3, "19-30": 8, "31-45": 6, "46-60": 11, "60+": 4}, "hoods": ["Vargeão", "Vila São Francisco"]}, "Londrina - Av. Bandeirantes": {"investment": 2527.49, "budget": 128982.04, "revenue": 28538.83, "roi": 1029.1, "roi_cat": "Prata", "roi_color": "#94a3b8", "conv": 22.1, "leads": 152, "female": 65.0, "age": {"0-18": 3, "19-30": 2, "31-45": 9, "46-60": 3, "60+": 3}, "hoods": ["Centro", "Bandeirantes", "Gleba Palhano"]}, "Curitiba": {"investment": 448.14, "budget": 69986.5, "revenue": 6220.01, "roi": 1288.0, "roi_cat": "Prata", "roi_color": "#94a3b8", "conv": 8.9, "leads": 23, "female": 33.3, "age": {"0-18": 0, "19-30": 0, "31-45": 0, "46-60": 3, "60+": 3}, "hoods": ["Cidade Industrial", "Novo Mundo", "Portão"]}, "Brusque": {"investment": 1979.87, "budget": 175254.75, "revenue": 22250.93, "roi": 1023.9, "roi_cat": "Prata", "roi_color": "#94a3b8", "conv": 12.7, "leads": 112, "female": 33.3, "age": {"0-18": 0, "19-30": 2, "31-45": 5, "46-60": 5, "60+": 0}, "hoods": ["Centro", "Gabiroba", "Limeira Baixa"]}, "Maringá - Souza Naves": {"investment": 2184.17, "budget": 108484.42, "revenue": 8025.0, "roi": 267.4, "roi_cat": "Atenção", "roi_color": "#f43f5e", "conv": 7.4, "leads": 99, "female": 55.2, "age": {"0-18": 2, "19-30": 7, "31-45": 9, "46-60": 10, "60+": 1}, "hoods": ["Centro", "Jardim Alvorada", "Zona 07"]}, "Mogi das Cruzes": {"investment": 4147.62, "budget": 213556.0, "revenue": 33359.94, "roi": 704.3, "roi_cat": "Atenção", "roi_color": "#f43f5e", "conv": 15.6, "leads": 121, "female": 37.0, "age": {"0-18": 0, "19-30": 2, "31-45": 12, "46-60": 9, "60+": 4}, "hoods": ["Centro", "Jundiapeba", "Vila Natal"]}};
 
 const picker = document.getElementById('clinicSelect');
-Object.keys(clinicsData).sort().forEach(c => {
-    let opt = document.createElement('option');
-    opt.value = c; opt.innerText = c;
-    picker.appendChild(opt);
+Object.keys(db).sort().forEach(c => {
+    let opt = document.createElement('option'); opt.value = c; opt.innerText = c; picker.appendChild(opt);
 });
 
-let charts = { gender: null, age: null };
+let ageChartInstance = null;
 
-function renderDashboard(clinicName) {
-    const d = clinicsData[clinicName];
-    
-    // KPIs
-    document.getElementById('kpiBudget').innerText = `R$ ${d.budget.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-    document.getElementById('kpiRevenue').innerText = `R$ ${d.revenue.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-    document.getElementById('kpiSpend').innerText = `R$ ${d.investment.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-    document.getElementById('kpiROI').innerText = `${d.roi.toFixed(1)}%`;
-    
-    const tag = document.getElementById('roiTag');
-    tag.innerText = d.roi_cat;
-    tag.style.backgroundColor = d.roi_color;
+function updateDashboard(clinic) {
+    const d = db[clinic];
+    document.getElementById('clinicTitle').innerText = clinic;
+    document.getElementById('vBudget').innerText = `R$ ${d.budget.toLocaleString('pt-BR')}`;
+    document.getElementById('vRevenue').innerText = `R$ ${d.revenue.toLocaleString('pt-BR')}`;
+    document.getElementById('vSpend').innerText = `R$ ${d.investment.toLocaleString('pt-BR')}`;
+    document.getElementById('vROI').innerText = `${d.roi.toFixed(1)}%`;
+    const rank = document.getElementById('vRank'); rank.innerText = d.roi_cat; rank.style.backgroundColor = d.roi_color;
 
-    // Localização
-    document.getElementById('cityList').innerHTML = d.cities.map(c => `<span class="city-tag">${c}</span>`).join(' ');
-    document.getElementById('hoodContainer').innerHTML = d.hoods.map(h => `<span class="tag">${h}</span>`).join('');
+    document.getElementById('fLeads').innerText = d.leads;
+    document.getElementById('fBudget').innerText = d.budget.toLocaleString('pt-BR');
+    document.getElementById('fRevenue').innerText = d.revenue.toLocaleString('pt-BR');
+    document.getElementById('fConv').innerText = `${d.conv.toFixed(1)}%`;
 
-    // Charts
-    if(charts.gender) charts.gender.destroy();
-    charts.gender = new Chart(document.getElementById('genderChart'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Fem', 'Masc'],
-            datasets: [{ data: [d.female_pct, d.male_pct], backgroundColor: ['#ec4899', '#3b82f6'], borderWeight: 0 }]
-        },
-        options: { plugins: { legend: { display: false } }, cutout: '75%' }
-    });
+    document.getElementById('hoodBox').innerHTML = d.hoods.map(h => `<span class="tag">${h}</span>`).join('');
+    document.getElementById('vGender').innerText = d.female > 50 ? 'FEMININO' : 'MASCULINO';
 
-    if(charts.age) charts.age.destroy();
-    charts.age = new Chart(document.getElementById('ageChart'), {
+    if(ageChartInstance) ageChartInstance.destroy();
+    ageChartInstance = new Chart(document.getElementById('ageChart'), {
         type: 'bar',
         data: {
             labels: ['0-18', '19-30', '31-45', '46-60', '60+'],
-            datasets: [{
-                label: 'Pacientes',
-                data: [d.age_dist['0-18'], d.age_dist['19-30'], d.age_dist['31-45'], d.age_dist['46-60'], d.age_dist['60+']],
-                backgroundColor: d.roi_color,
-                borderRadius: 8
-            }]
+            datasets: [{ data: Object.values(d.age), backgroundColor: d.roi_color, borderRadius: 12 }]
         },
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { display: false } } } }
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#94a3b8' } } },
+            plugins: { legend: { display: false } }
+        }
     });
 }
-
-// Iniciar com a primeira da lista
-renderDashboard(Object.keys(clinicsData).sort()[0]);
+updateDashboard("Caruaru");
 </script>
 </body>
 </html>
