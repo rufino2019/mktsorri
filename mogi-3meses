@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Mogi Digital | Performance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #0b0f1a; 
+            color: #e2e8f0; 
+            font-family: 'Inter', sans-serif; 
+        }
+        .glass-card { 
+            background: rgba(30, 41, 59, 0.7); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 16px; 
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+        }
+        .roi-glow {
+            text-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        
+        /* Funnel Improved */
+        .funnel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin: 2rem 0;
+        }
+        .funnel-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .step-top { 
+            width: 100%; max-width: 450px; height: 70px; 
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            clip-path: polygon(0% 0%, 100% 0%, 92% 100%, 8% 100%);
+        }
+        .step-mid { 
+            width: 85%; max-width: 380px; height: 70px; 
+            background: linear-gradient(90deg, #2563eb, #1d4ed8);
+            clip-path: polygon(0% 0%, 100% 0%, 88% 100%, 12% 100%);
+        }
+        .step-bottom { 
+            width: 65%; max-width: 280px; height: 70px; 
+            background: linear-gradient(90deg, #1d4ed8, #1e40af);
+            clip-path: polygon(0% 0%, 100% 0%, 80% 100%, 20% 100%);
+            border-radius: 0 0 8px 8px;
+        }
+        .label-text { font-size: 0.85rem; opacity: 0.9; margin-right: 8px; text-transform: uppercase; }
+        .value-text { font-size: 1.25rem; }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+    <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+            <div>
+                <h1 class="text-4xl font-black tracking-tight text-white mb-2">
+                    START <span class="text-blue-500">HUB</span> DASHBOARD
+                </h1>
+                <div class="flex items-center gap-3">
+                    <span class="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-xs font-bold border border-blue-500/20 uppercase">
+                        Relatório Comercial
+                    </span>
+                    <span class="text-slate-400 text-sm font-medium">
+                        📅 Período: 01/12/2025 a 26/02/2026
+                    </span>
+                </div>
+            </div>
+            <div class="bg-green-500/10 border border-green-500/20 p-4 rounded-xl text-right">
+                <p class="text-xs text-green-400 font-bold uppercase mb-1">ROI Calculado</p>
+                <p class="text-4xl font-black text-green-500 roi-glow">976,5%</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div class="glass-card border-l-4 border-l-slate-500">
+                <p class="text-slate-400 text-xs font-bold uppercase mb-2">Investimento</p>
+                <p class="text-2xl font-bold text-white">R$ 13.808,35</p>
+            </div>
+            <div class="glass-card border-l-4 border-l-blue-400">
+                <p class="text-slate-400 text-xs font-bold uppercase mb-2">Total Orçamentos</p>
+                <p class="text-2xl font-bold text-white">R$ 721.422,01</p>
+            </div>
+            <div class="glass-card border-l-4 border-l-green-500">
+                <p class="text-slate-400 text-xs font-bold uppercase mb-2">Total Efetivado</p>
+                <p class="text-2xl font-bold text-green-400">R$ 148.645,88</p>
+            </div>
+            <div class="glass-card border-l-4 border-l-blue-600">
+                <p class="text-slate-400 text-xs font-bold uppercase mb-2">ROAS</p>
+                <p class="text-2xl font-bold text-blue-400">10,76x</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <div class="lg:col-span-3 glass-card">
+                <h3 class="text-lg font-bold mb-8 flex items-center gap-2">
+                    <span class="w-2 h-6 bg-blue-500 rounded-full"></span>
+                    Funil de Conversão
+                </h3>
+                
+                <div class="funnel-container">
+                    <div class="funnel-item step-top">
+                        <span class="label-text">Conversas</span>
+                        <span class="value-text">532</span>
+                    </div>
+                    <div class="funnel-item step-mid">
+                        <span class="label-text">Orçamentos</span>
+                        <span class="value-text">95</span>
+                    </div>
+                    <div class="funnel-item step-bottom">
+                        <span class="label-text">Efetivados</span>
+                        <span class="value-text">36</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mt-10">
+                    <div class="text-center p-4 bg-white/5 rounded-lg border border-white/10">
+                        <p class="text-[10px] uppercase text-slate-400 font-bold">Taxa Lead > Orçamento</p>
+                        <p class="text-xl font-bold text-blue-400">17,8%</p>
+                    </div>
+                    <div class="text-center p-4 bg-white/5 rounded-lg border border-white/10">
+                        <p class="text-[10px] uppercase text-slate-400 font-bold">Taxa Fechamento</p>
+                        <p class="text-xl font-bold text-green-500">37,9%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 glass-card">
+                <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                    <span class="w-2 h-6 bg-blue-500 rounded-full"></span>
+                    Ranking por Canal
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center p-4 bg-white/5 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-500 font-bold text-xs">1º</span>
+                            <span class="text-sm font-medium text-slate-200">WhatsApp Direto</span>
+                        </div>
+                        <span class="text-sm font-bold">R$ 64.512</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-white/5 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500 font-bold text-xs">2º</span>
+                            <span class="text-sm font-medium text-slate-200">Facebook Ads</span>
+                        </div>
+                        <span class="text-sm font-bold">R$ 47.063</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-white/5 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-500 font-bold text-xs">3º</span>
+                            <span class="text-sm font-medium text-slate-200">Instagram Ads</span>
+                        </div>
+                        <span class="text-sm font-bold">R$ 15.566</span>
+                    </div>
+                </div>
+                
+                <div class="mt-8 pt-6 border-t border-white/10 text-center">
+                    <p class="text-slate-500 text-xs mb-1 uppercase font-bold tracking-widest">Custo por Lead Médio</p>
+                    <p class="text-2xl font-black text-white">R$ 25,95</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
